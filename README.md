@@ -2,6 +2,8 @@
 
 Fork of [react-mobile-picker](https://github.com/adcentury/react-mobile-picker) rewritten in React and styled with SCSS. While react-mobile-picker is a basic implementation of a picker, react-timewheel tries to be as close as possible to the behavior of the native browser implementation of the iOS date picker.
 
+Demo: [https://react-time-wheel.firebaseapp.com/]
+
 ## Development Prerequisites
 
 You will need the following things properly installed on your computer.
