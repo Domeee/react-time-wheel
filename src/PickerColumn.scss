@@ -1,0 +1,15 @@
+.picker-column {
+  flex: 1 1;
+
+  position: relative;
+
+  max-height: 100%;
+
+  overflow: hidden;
+  text-align: center;
+
+  .picker-scroller {
+    transition: 300ms;
+    transition-timing-function: ease-out;
+  }
+}

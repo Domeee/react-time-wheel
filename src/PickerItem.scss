@@ -1,0 +1,12 @@
+.picker-item {
+  position: relative;
+  padding: 0 10px;
+  white-space: nowrap;
+  color: #999999;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &.picker-item-selected {
+    color: #222;
+  }
+}
