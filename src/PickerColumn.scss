@@ -8,6 +8,12 @@
   overflow: hidden;
   text-align: center;
 
+  /* disable text selection via swiping */
+  user-select: none;
+
+  /* disable browser handling of all panning and zooming gestures */
+  touch-action: none;
+
   .picker-scroller {
     transition: 300ms;
     transition-timing-function: ease-out;

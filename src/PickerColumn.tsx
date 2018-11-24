@@ -25,6 +25,7 @@ class PickerColumn extends React.Component<
   PickerColumnProps,
   PickerColumnState
 > {
+  private touchY: number = 0;
   constructor(props: PickerColumnProps) {
     super(props);
 
@@ -53,11 +54,11 @@ class PickerColumn extends React.Component<
       OTransform: translateString,
       WebkitTransform: translateString,
       transform: translateString,
-      transitionDuration: "0.3ms"
+      transitionDuration: "600ms" // 300 is the default value
     };
-    if (this.state.isMoving) {
-      style.transitionDuration = "0ms";
-    }
+    // if (this.state.isMoving) {
+    //   style.transitionDuration = "0ms";
+    // }
     const items = this.props.options.map(option => {
       return (
         <PickerItem
@@ -100,6 +101,7 @@ class PickerColumn extends React.Component<
       this.onValueSelected(options[0]);
       selectedIndex = 0;
     }
+
     return {
       scrollerTranslate:
         columnHeight / 2 - itemHeight / 2 - selectedIndex * itemHeight,
@@ -116,82 +118,52 @@ class PickerColumn extends React.Component<
   private handleTouchStart = (event: any) => {
     console.log("handleTouchStart");
     const startTouchY = event.targetTouches[0].pageY;
+    console.log(`startTouchY: ${startTouchY}`);
     this.setState(({ scrollerTranslate }) => ({
       startTouchY,
-      startScrollerTranslate: scrollerTranslate
+      startScrollerTranslate: scrollerTranslate,
+      isMoving: true
     }));
   };
 
   handleTouchMove = (event: any) => {
-    console.log("handleTouchMove");
-    event.preventDefault();
-    const touchY = event.targetTouches[0].pageY;
-    this.setState(
-      ({
-        isMoving,
-        startTouchY,
-        startScrollerTranslate,
-        minTranslate,
-        maxTranslate,
-        scrollerTranslate
-      }) => {
-        if (!isMoving) {
-          return {
-            isMoving: true,
-            startTouchY,
-            startScrollerTranslate,
-            minTranslate,
-            maxTranslate,
-            scrollerTranslate
-          };
-        }
-
-        let nextScrollerTranslate =
-          startScrollerTranslate + touchY - startTouchY;
-        if (nextScrollerTranslate < minTranslate) {
-          nextScrollerTranslate =
-            minTranslate - Math.pow(minTranslate - nextScrollerTranslate, 0.8);
-        } else if (nextScrollerTranslate > maxTranslate) {
-          nextScrollerTranslate =
-            maxTranslate + Math.pow(nextScrollerTranslate - maxTranslate, 0.8);
-        }
-        return {
-          scrollerTranslate: nextScrollerTranslate,
-          isMoving,
-          maxTranslate,
-          minTranslate,
-          startScrollerTranslate,
-          startTouchY
-        };
-      }
-    );
+    this.touchY = event.targetTouches[0].pageY;
   };
 
   handleTouchEnd = (event: any) => {
-    console.log("handleTouchEnd");
     if (!this.state.isMoving) {
       return;
     }
-    this.setState({
-      isMoving: false,
-      startTouchY: 0,
-      startScrollerTranslate: 0
-    });
-    setTimeout(() => {
-      const { options, itemHeight } = this.props;
-      const { scrollerTranslate, minTranslate, maxTranslate } = this.state;
-      let activeIndex;
-      if (scrollerTranslate > maxTranslate) {
-        activeIndex = 0;
-      } else if (scrollerTranslate < minTranslate) {
-        activeIndex = options.length - 1;
-      } else {
-        activeIndex = -Math.floor(
-          (scrollerTranslate - maxTranslate) / itemHeight
-        );
+
+    this.setState(
+      (prevState: PickerColumnState) => {
+        let nextScrollerTranslate =
+          prevState.startScrollerTranslate +
+          this.touchY -
+          prevState.startTouchY;
+        return {
+          scrollerTranslate: nextScrollerTranslate,
+          isMoving: false,
+          startTouchY: 0,
+          startScrollerTranslate: 0
+        };
+      },
+      () => {
+        const { options, itemHeight } = this.props;
+        const { scrollerTranslate, minTranslate, maxTranslate } = this.state;
+        let activeIndex;
+        if (scrollerTranslate > maxTranslate) {
+          activeIndex = 0;
+        } else if (scrollerTranslate < minTranslate) {
+          activeIndex = options.length - 1;
+        } else {
+          activeIndex = -Math.floor(
+            (scrollerTranslate - maxTranslate) / itemHeight
+          );
+        }
+        this.onValueSelected(options[activeIndex]);
       }
-      this.onValueSelected(options[activeIndex]);
-    }, 0);
+    );
   };
 
   handleTouchCancel = (event: any) => {
@@ -211,10 +183,8 @@ class PickerColumn extends React.Component<
 
   handleItemClick = (option: any) => {
     if (option !== this.props.value) {
-      console.log("handleItemClick option !== this.props.value");
       this.onValueSelected(option);
     } else {
-      console.log("handleItemClick option === this.props.value");
       this.props.onClick(this.props.name, this.props.value);
     }
   };
