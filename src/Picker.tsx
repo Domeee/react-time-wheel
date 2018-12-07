@@ -3,8 +3,8 @@ import PickerColumn from "./PickerColumn";
 import "./Picker.scss";
 
 export interface PickerProps {
-  optionGroups: { seconds: number[]; [index: string]: number[] };
-  valueGroups: { seconds: number; [index: string]: number };
+  optionGroups: { [index: string]: number[] };
+  valueGroups: { [index: string]: number };
   itemHeight: number;
   height: number;
   onChange(option: string, value: number): void;

@@ -1,7 +1,14 @@
 .picker-container {
   z-index: 10001;
-
   width: 100%;
+
+  /* disable text selection via swiping */
+  user-select: none;
+
+  /* disable browser handling of all panning and zooming gestures */
+  touch-action: none;
+
+  outline: none;
 
   &,
   *,
